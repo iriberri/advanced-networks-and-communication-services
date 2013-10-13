@@ -208,7 +208,9 @@ unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
  *   La función devuelve '-1' si se ha producido algún error. 
  */
  int ipv4_receive( ipv4_addr_t src, uint16_t proto, unsigned char buffer[], long int timeout){
- 	timerms_t timer;
+ 	
+     	printf("Starting send @ ipv4_receive\n");
+	timerms_t timer;
  	timerms_reset(&timer, timeout);
  	unsigned char eth_buffer[ETH_MTU];
  	ipv4_packet packet;
@@ -217,6 +219,7 @@ unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
 
  	do {
  		long int time_left = timerms_left(&timer);
+		printf("Inside do-while loop, waiting to receive something @ ipv4_server\n");
  		payload_len = eth_recv(iface, mac_rcv, IP_ETH_TYPE, eth_buffer, time_left);
  		if (payload_len == -1) {
  			printf("Packet cannot be received @ipv4_receive");

@@ -94,40 +94,54 @@ int ipv4_route_lookup ( ipv4_route_t * route, ipv4_addr_t addr )
  /*Traverse each byte of the given IP addres and comparte
  it with the subnet mask of the given route */
 for(i =0; i<IPv4_ADDR_SIZE; i++){
+  /*Apply mask to IP address that we are checking */
   aux[i] = addr[i] & route->subnet_mask[i];
 }
 
+/* When mask is applied to IP address, this should be equal
+to the route in order to send through this route
+Example:
+Route: 10.0.0.0 Mask 255.255.0.0
+IP: 10.0.254.231
+Apply mask to IP -> 10.0.0.0 = route
+If
+IP: 192.168.1.1
+Apply mask to IP -> 192.168.0.0 != route
+*/
+  if(memcmp(aux, route->subnet_addr, IPv4_ADDR_SIZE)!=0)
+    return prefix_length;
+  
 int j;
 /* Traverse the compared result to obtain the number of
 bit that are equal, this is, the number of "ones"*/
  for(j =0; j<IPv4_ADDR_SIZE; j++){
 switch (aux[j]){
   case 255:
-    prefix_length_aux=+8;
+    prefix_length_aux+=8;
     break;
   case 254:
-        prefix_length_aux=+7;
+        prefix_length_aux+=7;
 break;
   case 252:
-      prefix_length_aux=+6;
+      prefix_length_aux+=6;
 break;
   case 248:
-        prefix_length_aux=+5;
+        prefix_length_aux+=5;
 break;
   case 240:
-        prefix_length_aux=+4;
+        prefix_length_aux+=4;
 break;
   case 224:   
-        prefix_length_aux=+3;
+        prefix_length_aux+=3;
 break;
   case 192:
-        prefix_length_aux=+2;
+        prefix_length_aux+=2;
 break;
   case 128:
-        prefix_length_aux=+1;
+        prefix_length_aux+=1;
 break;
   case 0:
-        prefix_length_aux=+0;
+        prefix_length_aux+=0;
 break;
 }
 }
@@ -137,9 +151,9 @@ is null, we check that there are coincidences in order to
 give the prefix_length value. We sum an extra 1 because of
 the initial variable value was -1. */
 if (prefix_length_aux>0){
-prefix_length=+prefix_length_aux+1;
+prefix_length+=prefix_length_aux;
 }
-  return prefix_length;
+  return prefix_length+1;
 }
 
 

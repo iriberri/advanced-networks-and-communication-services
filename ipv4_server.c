@@ -54,9 +54,10 @@
 
  	while(1){
   	printf("Starting server @ ipv4_server\n");
+	  long int timeout=-1; //Infinite timeout
 
-  long int timeout=-1; //Infinite timeout
-  int err_rcvd= ipv4_receive  (IP_src, type_protocol, buffer, timeout);
+  int err_rcvd= ipv4_receive (IP_src, type_protocol, buffer, timeout);
+  	printf("Something has been received @ipv4_server\n");
 
 
   if(err_rcvd==-1)
