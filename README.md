@@ -1,4 +1,4 @@
-advanced-networks-and-communication-services
+Advanced networks and communication services
 ============================================
 
 RySCA project
