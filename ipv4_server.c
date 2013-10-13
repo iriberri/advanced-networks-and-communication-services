@@ -35,18 +35,14 @@
  	unsigned char  type_protocol = atoi (argv[1]);
 
  /* Opening configuration file and routing table */
- 	int err_open =ipv4_open("ipv4_config_server.txt", "ipv4_route_table_server.txt");
+ 	ipv4_open("ipv4_config_server.txt", "ipv4_route_table_server.txt");
 
- 	if(err_open==-1){
- 		printf("Error when opening configuration file or routing table  @ ipv4_server\n");
- 		exit(-1);
- 	}
 
- 	int payload_len = DEFAULT_PAYLOAD_LENGTH;
+ 	int payload_len = IPv4_MAX_PAYLOAD_LENGTH;
  	if (argc == 4) {
  		char * payload_len_str = argv[3];
  		payload_len = atoi(payload_len_str);
- 		if ((payload_len < 0) || (payload_len > DEFAULT_PAYLOAD_LENGTH)) {
+ 		if ((payload_len < 0) || (payload_len > IPv4_MAX_PAYLOAD_LENGTH)) {
  			fprintf(stderr, "%s: Longitud de payload incorrecta: \"%s\"\n",
  				myself, payload_len_str);
  			exit(-1);
@@ -57,9 +53,10 @@
  	unsigned char buffer[IPv4_MAX_PAYLOAD_LENGTH];
 
  	while(1){
+  	printf("Starting server @ ipv4_server\n");
 
   long int timeout=-1; //Infinite timeout
-  int err_rcvd= ipv4_recv  (IP_src, type_protocol, data, timeout);
+  int err_rcvd= ipv4_receive  (IP_src, type_protocol, buffer, timeout);
 
 
   if(err_rcvd==-1)

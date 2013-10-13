@@ -75,7 +75,7 @@ Types:
  	printf("Error when sending to broadcast. @ arp_resolve\n");
  	exit(-1);
  }   else{
- 	printf("%d bytes have been sent. @ arp_resolve\n");
+ 	printf("%d bytes have been sent. @ arp_resolve\n",err);
  }
 
 

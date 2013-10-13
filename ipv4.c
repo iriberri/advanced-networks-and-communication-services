@@ -1,4 +1,8 @@
 #include "ipv4.h"
+#include "eth.h"
+#include "arp.h"
+#include "ipv4_config.h"
+#include "ipv4_route_table.h"
 #include <timerms.h>
 #include <string.h>
 #include <stdio.h>
@@ -105,7 +109,7 @@ ipv4_addr_t netmask_src_addr;
  	ipv4_packet.ip_version_length=0x45;
  	ipv4_packet.ip_tos= 0;
  	ipv4_packet.ip_len=htons(IPv4_HEADER_LENGTH + payload_len);
- 	ipv4_packet.ip_id=htons(284673);
+ 	ipv4_packet.ip_id=htons(2873);
  	ipv4_packet.ip_off= 0;
  	ipv4_packet.ip_ttl= 64;
  	ipv4_packet.ip_prot= proto;
@@ -136,9 +140,10 @@ ipv4_addr_t netmask_src_addr;
    * ip, subred, byte s byte and
    * host se queda a 0
    * comparar con dir de subred de ruta*/
+unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
 
   //gateway == nexthop
-   int check_gateway_zero= memcmp(route->gateway_addr,0,IPv4_ADDR_SIZE);
+   int check_gateway_zero= memcmp(route->gateway_addr,zerobuf,IPv4_ADDR_SIZE);
 
    if (check_gateway_zero != 0){
    	int result_arp = arp_resolve (iface, route->gateway_addr, dst_mac_addr);

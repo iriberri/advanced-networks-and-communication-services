@@ -3,8 +3,6 @@
 
 #include <stdint.h>
 #include <netinet/in.h>
-#include "ipv4_config.h"
-#include "ipv4_route_table.h"
 
 #define IPv4_ADDR_SIZE 4
 #define IPv4_STR_MAX_LENGTH 16
@@ -17,6 +15,7 @@
 
 
 typedef unsigned char ipv4_addr_t [IPv4_ADDR_SIZE];
+
 /* ipv4_open (char *config_file, char *route_table);
  *
  * DESCRIPCIÓN: 

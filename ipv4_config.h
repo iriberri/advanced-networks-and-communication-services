@@ -35,7 +35,6 @@
  *   La función devuelve '-1' si se ha producido algún error al leer el
  *   fichero de configuración.
  */
-int ipv4_config_read
-( char* filename, char ifname[], ipv4_addr_t addr, ipv4_addr_t netmask );
+int ipv4_config_read( char* filename, char ifname[], ipv4_addr_t addr, ipv4_addr_t netmask );
 
 #endif /* _IPv4_CONFIG_H*/

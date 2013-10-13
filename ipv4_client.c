@@ -33,7 +33,7 @@
  		printf("        <Protocolo>: Protocolo del paquete de la capa superior\n");
  		printf("         <IP>: Dirección destino del servidor IP\n");
  		printf("        <size>: Tamaño de payload\n");
- 		printf("                (%d bytes por defecto)\n", DEFAULT_PAYLOAD_LENGTH);
+ 		printf("                (%d bytes por defecto)\n", IPv4_MAX_PAYLOAD_LENGTH);
 
  		exit(-1);
  	}
@@ -50,12 +50,9 @@
  	}
 
 /* Opening configuration file and routing table */
- 	int err_file = ipv4_open("ipv4_config_client.txt", "ipv4_route_table_client.txt");
+ 	ipv4_open("ipv4_config_client.txt", "ipv4_route_table_client.txt");
 
- 	if(err_file==-1){
- 		printf("Error when opening configuration file or routing table  @ ipv4_client\n");
- 		exit(-1);
- 	}
+
 
 
  /* Create and fill the payload with consecutive numbers*/
@@ -91,10 +88,10 @@
   /* Receive */
 
  	ipv4_addr_t IP_src; //IP from where the packet comes from
- 	unsigned char buffer_rcvd[DEFAULT_PAYLOAD_LENGTH];
+ 	unsigned char buffer_rcvd[IPv4_MAX_PAYLOAD_LENGTH];
  	long int timeout=8000;
 
- 	int err_rcvd= ipv4_recv  (IP_src, upper_protocol, buffer_rcvd, timeout);
+ 	int err_rcvd= ipv4_receive  (IP_src, type_protocol, buffer_rcvd, timeout);
 
  	if(err_rcvd==-1){
  		printf("Error when receiving packet @ ipv4_client\n");
