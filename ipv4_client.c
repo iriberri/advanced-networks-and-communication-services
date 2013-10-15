@@ -39,15 +39,32 @@
  	}
 
   /* Getting upper protocol */
- 	unsigned char  type_protocol = atoi (argv[1]);
+ 	unsigned char type_protocol = atoi (argv[1]);
+	//  printf("rprotocol%d\n", type_protocol);
+	  //	  printf("rprotocol%s\n", argv[1]);
+
 
 /*Getting destination IP (IPv4 server' IP)*/
- 	ipv4_addr_t IP_dest;
- 	int err_ip = ipv4_str_addr(argv[2], IP_dest);
- 	if(err_ip==-1){
- 		printf("Invalid target address  @ ipv4_client\n");
- 		return -1;
- 	}
+ 	//ipv4_addr_t IP_dest2;
+ 	char* ipv4_strr=argv[2];
+	 	ipv4_addr_t IP_dest;
+
+		//char* deste[IPv4_ADDR_SIZE];
+	//memcpy(IP_dest2, argv[2], IPv4_ADDR_SIZE);
+ 	//ipv4_addr_str(argv[2], IP_dest);
+	 int err_ippp=	ipv4_str_addr(ipv4_strr, IP_dest);
+if (err_ippp==-1){
+  return(-1);
+}
+	
+	//  printf("receiver IP addr %s\n", IP_dest);
+	  //	  printf("receiver IP addr %s\n", ipv4_strr);
+
+
+ 	//if(err_ip==-1){
+ 	//	printf("Invalid target address  @ ipv4_client\n");
+ 	//	return -1;
+ 	//}
 
 /* Opening configuration file and routing table */
  	ipv4_open("ipv4_config_client.txt", "ipv4_route_table_client.txt");
@@ -71,7 +88,7 @@
 
 
   /* Send */
- 	int err_send=ipv4_send (IP_dest, type_protocol, payload, payload_len);
+ 	int err_send=ipv4_send (IP_dest, (uint8_t)type_protocol, payload, payload_len);
 
  	if(err_send==-1){
  		printf("Error in ipv4_send() @ ipv4_client\n");
@@ -91,7 +108,7 @@
  	unsigned char buffer_rcvd[IPv4_MAX_PAYLOAD_LENGTH];
  	long int timeout=8000;
 
- 	int err_rcvd= ipv4_receive  (IP_src, type_protocol, buffer_rcvd, timeout);
+ 	int err_rcvd= ipv4_receive  (IP_src, (uint8_t)type_protocol, buffer_rcvd, timeout);
 
  	if(err_rcvd==-1){
  		printf("Error when receiving packet @ ipv4_client\n");

@@ -24,8 +24,8 @@ struct ipv4_packet {
 
 typedef struct ipv4_packet ipv4_packet;
 
-eth_iface_t *iface;
-ipv4_route_table_t *rt_table;
+eth_iface_t* iface;
+ipv4_route_table_t * rt_table;
 ipv4_addr_t my_ip_addr;
 ipv4_addr_t netmask_src_addr;
 
@@ -47,18 +47,26 @@ ipv4_addr_t netmask_src_addr;
  * VALOR DEVUELTO:
  *   Ninguno
  */
- void ipv4_open(char *config_file, char *route_table){
+ void ipv4_open(char * config_file, char * route_table){
  	int err_read;
  	char iface_nm[IFACE_NAME_LENGTH];
  	err_read= ipv4_config_read( config_file, iface_nm, my_ip_addr,  netmask_src_addr );
- 	if (err_read==-1){
+ 	if (err_read!=0){
  		printf("Couldn't read configuration file \n");
  		exit(-1);
  	}
  	rt_table = ipv4_route_table_create();
- 	ipv4_route_table_read(route_table, rt_table);  
+ 	int err_entries = ipv4_route_table_read(route_table, rt_table);  
+  if(err_entries<1){
+        printf("No entries read from route table\n");
+  }
 
  	iface = eth_open(iface_nm);
+
+
+  char myIP2[IPv4_STR_MAX_LENGTH];
+  ipv4_addr_str(my_ip_addr, myIP2);
+                printf("My ip taken of config: %s\n", myIP2);
  }
 //inicializaciones: ficheros config (saber ip propia), interfaz, tabla rutas inicialziar y rellenar, abrir ethopen
 
@@ -85,7 +93,7 @@ ipv4_addr_t netmask_src_addr;
 
 
 /* int ipv4_send 
- * (ipv4_addr_t dst, uint16_t type, unsigned char * payload, int payload_len);
+ * (ipv4_addr_t dst, int type, unsigned char * payload, int payload_len);
  *
  * DESCRIPCIÓN:
  *   Esta función permite enviar un paquete IPv4 a la dirección IPv4
@@ -104,23 +112,33 @@ ipv4_addr_t netmask_src_addr;
  * ERRORES:
  *   La función devuelve '-1' si se ha producido algún error. 
  */
- int ipv4_send( ipv4_addr_t dst, uint16_t proto, unsigned char * payload, int payload_len){
+ int ipv4_send( ipv4_addr_t dst, uint8_t proto, unsigned char * payload, int payload_len){
  	ipv4_packet ipv4_packet;
  	ipv4_packet.ip_version_length=0x45;
- 	ipv4_packet.ip_tos= 0;
+ 	ipv4_packet.ip_tos= 0x00;
  	ipv4_packet.ip_len=htons(IPv4_HEADER_LENGTH + payload_len);
- 	ipv4_packet.ip_id=htons(2873);
- 	ipv4_packet.ip_off= 0;
+ 	ipv4_packet.ip_id=htons(0x2873);
+ 	ipv4_packet.ip_off= 0x0000;
  	ipv4_packet.ip_ttl= 64;
  	ipv4_packet.ip_prot= proto;
- 	ipv4_packet.ip_checksum=0;
+ 	ipv4_packet.ip_checksum=0x0000;
   //checksum a 0 memset
  	memcpy(ipv4_packet.ip_dst, dst ,IPv4_ADDR_SIZE);
  	memcpy(ipv4_packet.ip_src, my_ip_addr ,IPv4_ADDR_SIZE);
  	memcpy(ipv4_packet.payload, payload, payload_len);
+	
+		 
+
   //inicializar campo checksum a 0 
   ipv4_packet.ip_checksum= htons(ipv4_checksum((unsigned char *)&ipv4_packet, IPv4_HEADER_LENGTH));//en udp, cabecera más payload, en ip sólo cabecera
   //sin payload len
+
+
+    char st[IPv4_STR_MAX_LENGTH];
+  ipv4_addr_str ( dst, st );
+  printf("receiver IP addr %s\n", st);
+
+
   mac_addr_t dst_mac_addr; //6bytes
   
   ipv4_route_t * route;
@@ -140,12 +158,13 @@ ipv4_addr_t netmask_src_addr;
    * ip, subred, byte s byte and
    * host se queda a 0
    * comparar con dir de subred de ruta*/
-unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
-
+//unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
+char gateway_str[IPv4_STR_MAX_LENGTH];
+  ipv4_addr_str(route->gateway_addr, gateway_str);
   //gateway == nexthop
-   int check_gateway_zero= memcmp(route->gateway_addr,zerobuf,IPv4_ADDR_SIZE);
+   int check_gateway_zero= memcmp(gateway_str,"0.0.0.0",IPv4_STR_MAX_LENGTH);
 
-   if (check_gateway_zero != 0){
+   if (check_gateway_zero == 0){
    	int result_arp = arp_resolve (iface, route->gateway_addr, dst_mac_addr);
    	if (result_arp ==-1 ){
    		return -1;
@@ -158,7 +177,7 @@ unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
    }
   //next hop 00000
   //pasar dst a arp
-   if (check_gateway_zero == 0){
+   if (check_gateway_zero != 0){
    	int result_arp = arp_resolve (iface, dst, dst_mac_addr);
    	if (result_arp ==-1){
    		return -1;
@@ -181,7 +200,7 @@ unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
 }
 
 /* int ipv4_receive 
- * (ipv4_addr_t src, uint16_t type, unsigned char buffer[], long int timeout);
+ * (ipv4_addr_t src, int type, unsigned char buffer[], long int timeout);
  *
  * DESCRIPCIÓN:
  *   Esta función permite obtener el siguiente paquete IPv4 recibido por la
@@ -207,7 +226,7 @@ unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
  * ERRORES:
  *   La función devuelve '-1' si se ha producido algún error. 
  */
- int ipv4_receive( ipv4_addr_t src, uint16_t proto, unsigned char buffer[], long int timeout){
+ int ipv4_receive( ipv4_addr_t src, uint8_t proto, unsigned char buffer[], long int timeout){
  	
      	printf("Starting send @ ipv4_receive\n");
 	timerms_t timer;
@@ -219,7 +238,7 @@ unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
 
  	do {
  		long int time_left = timerms_left(&timer);
-		printf("Inside do-while loop, waiting to receive something @ ipv4_server\n");
+		//printf("Inside do-while loop, waiting to receive something @ ipv4_server\n");
  		payload_len = eth_recv(iface, mac_rcv, IP_ETH_TYPE, eth_buffer, time_left);
  		if (payload_len == -1) {
  			printf("Packet cannot be received @ipv4_receive");
@@ -232,19 +251,33 @@ unsigned char zerobuf[IPv4_ADDR_SIZE] = { 0 };
 
  		memcpy(&packet, eth_buffer, payload_len);
 
- 		uint16_t checksum = ntohs(packet.ip_checksum);
+ 		/*uint16_t checksum = ntohs(packet.ip_checksum);
  		packet.ip_checksum = 0;
  		uint16_t new_checksum = ipv4_checksum((unsigned char *) &packet, IPv4_HEADER_LENGTH);
 
  		if (new_checksum != checksum) {
  			printf("Incorrect checksum (%d!=%d)", checksum, new_checksum);
- 		}
+ 		}*/
+               // printf("Protocolo: %x\n", ntohs(packet.ip_prot));
+                 //               printf("Protocolo sin ntohs: %d\n", packet.ip_prot);
 
+       //         printf("Protocolo2: %d\n", proto);
+		
+		char IPdst[IPv4_STR_MAX_LENGTH];
+  ipv4_addr_str( packet.ip_dst, IPdst);
+  char myIP[IPv4_STR_MAX_LENGTH];
+  ipv4_addr_str(my_ip_addr, myIP);
+//printf("IP dest packet: %s\n", IPdst);
+   //             printf("My ip (dst): %s\n", myIP);
 
- 	} while (!((memcmp(packet.ip_dst,my_ip_addr, IPv4_ADDR_SIZE) == 0) && (packet.ip_prot == proto)));
+           //     printf("Lo siguiente es un trozo de: \n");
+
+		//print_pkt((unsigned char*) &packet.ip_prot, 2, 0);
+ 	} while (!((memcmp(packet.ip_dst,my_ip_addr, IPv4_ADDR_SIZE) == 0) && (packet.ip_prot) == proto));
 
  	memcpy(buffer, packet.payload, payload_len - IPv4_HEADER_LENGTH);
  	memcpy(src, packet.ip_src, IPv4_ADDR_SIZE);
+	printf("A packet arrived with protocol number %d\n", packet.ip_prot);
   /* Return number of received bytes */
  	return ntohs(packet.ip_len);
  }

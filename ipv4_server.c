@@ -32,7 +32,7 @@
 
 
  /* Getting upper protocol */
- 	unsigned char  type_protocol = atoi (argv[1]);
+ 	unsigned char type_protocol = atoi (argv[1]);
 
  /* Opening configuration file and routing table */
  	ipv4_open("ipv4_config_server.txt", "ipv4_route_table_server.txt");
@@ -56,7 +56,7 @@
   	printf("Starting server @ ipv4_server\n");
 	  long int timeout=-1; //Infinite timeout
 
-  int err_rcvd= ipv4_receive (IP_src, type_protocol, buffer, timeout);
+  int err_rcvd= ipv4_receive (IP_src, (uint8_t)type_protocol, buffer, timeout);
   	printf("Something has been received @ipv4_server\n");
 
 
@@ -78,7 +78,7 @@
 
 
  /* Once we receive the packet, we sent it back */
-  int err_send=ipv4_send ( IP_src, type_protocol, buffer, err_rcvd);
+  int err_send=ipv4_send (IP_src, (uint8_t)type_protocol, buffer, err_rcvd);
   
   if(err_send==-1)
   {

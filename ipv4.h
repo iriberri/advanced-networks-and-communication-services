@@ -74,7 +74,7 @@ typedef unsigned char ipv4_addr_t [IPv4_ADDR_SIZE];
  * ERRORES:
  *   La función devuelve '-1' si se ha producido algún error. 
  */
- int ipv4_send( ipv4_addr_t dst, uint16_t type, unsigned char * payload, int payload_len);
+ int ipv4_send( ipv4_addr_t dst, uint8_t type, unsigned char * payload, int payload_len);
 /* int ipv4_receive 
  * (ipv4_addr_t src, uint16_t type, unsigned char buffer[], long int timeout);
  *
@@ -102,7 +102,7 @@ typedef unsigned char ipv4_addr_t [IPv4_ADDR_SIZE];
  * ERRORES:
  *   La función devuelve '-1' si se ha producido algún error. 
  */
- int ipv4_receive( ipv4_addr_t src, uint16_t type, unsigned char buffer[], long int timeout);
+ int ipv4_receive( ipv4_addr_t src, uint8_t type, unsigned char buffer[], long int timeout);
 /*
  * uint16_t ipv4_checksum ( unsigned char * data, int len )
  *

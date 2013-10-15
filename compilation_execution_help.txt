@@ -1,0 +1,43 @@
+%%
+
+
+rawnetcc arp_client arp_client.c arp.c eth.c ipv4.c ipv4_route_table.c ipv4_config.c
+
+ejecutar cliente ARP
+/arp_client eth0 <IP_target>
+
+
+%%
+
+rawnetcc /tmp/ipv4_client -g ipv4_client.c arp.c eth.c ipv4.c ipv4_route_table.c ipv4_config.c
+rawnetcc ipv4_server ipv4_server.c arp.c eth.c ipv4.c ipv4_route_table.c ipv4_config.c
+
+
+-> modificar archivos txt de rutas y configuraciones con las IPs correspondientes
+Ejemplo:
+# ipv4_config_server.txt
+#
+Interface eth0
+IPv4Address 163.117.144.XXX 
+SubnetMask 255.255.255.0
+
+
+# ipv4_route_table_client.txt
+#
+# SubnetAddr    SubnetMask      Iface    Gateway   
+0.0.0.0         0.0.0.0         eth0     163.117.144.2
+163.117.144.0    255.255.255.0   eth0     0.0.0.0
+
+
+ejecutar cliente IP
+./ipv4_client <prot> <IP_server> <size_payload>
+
+ejecutar servidor IP
+./ipv4_server <prot>
+
+
+%%
+
+ejecutar cliente y servidor ETH
+ /tmp/eth_server eth0 0x1234
+/tmp/eth_client eth0 0x1234 <MAC>
