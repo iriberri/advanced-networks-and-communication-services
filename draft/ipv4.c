@@ -162,11 +162,10 @@ ipv4_addr_t netmask_src_addr;
 char gateway_str[IPv4_STR_MAX_LENGTH];
   ipv4_addr_str(route->gateway_addr, gateway_str);
   //gateway == nexthop
-  ipv4_addr_t zero = { 0x00, 0x00, 0x00, 0x00 };
-   int check_gateway_zero= memcmp(route->gateway_addr,zero,IPv4_ADDR_SIZE);
+   int check_gateway_zero= memcmp(gateway_str,"0.0.0.0",IPv4_STR_MAX_LENGTH);
 
-   if (check_gateway_zero != 0){
-   	int result_arp = arp_resolve (iface, route->gateway_addr, dst_mac_addr,my_ip_addr);
+   if (check_gateway_zero == 0){
+   	int result_arp = arp_resolve (iface, route->gateway_addr, dst_mac_addr);
    	if (result_arp ==-1 ){
    		return -1;
    	}
@@ -178,8 +177,8 @@ char gateway_str[IPv4_STR_MAX_LENGTH];
    }
   //next hop 00000
   //pasar dst a arp
-   if (check_gateway_zero == 0){
-   	int result_arp = arp_resolve (iface, dst, dst_mac_addr,my_ip_addr);
+   if (check_gateway_zero != 0){
+   	int result_arp = arp_resolve (iface, dst, dst_mac_addr);
    	if (result_arp ==-1){
    		return -1;
    	}

@@ -45,26 +45,7 @@ printf("Error when opening ethernet interface (NULL) @arp_client\n");
 /* Call to arp_resolve function. As parameters we send the IP address
 we are given to ask for, and the empty variable that will become the 
 corresponding MAC address associated with the device that has the IP dest*/
-ipv4_addr_t ip_src;
-
-//We obtain the source IP -> set to zero
-
- int err_read;
-
- 
-	err_read= ipv4_config_getip("ipv4_config_client.txt",ip_src);
- 
- if (err_read==-1){
-  		printf("Couldn't read IP source @ arp_client\n");
-  		exit(-1);
-  	}
-  	
-  	
- 	
- 	
-    //    memset(ip_src, 0x00, IPv4_ADDR_SIZE);
-
-int result_arp = arp_resolve (iface, dest, target_addr,ip_src);
+int result_arp = arp_resolve (iface, dest, target_addr);
 if (result_arp==-1){
   printf("Error: arp_resolve returns '-1' @arp_client\n");
 	return -1;

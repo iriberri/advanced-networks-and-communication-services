@@ -1,6 +1,5 @@
 #include "eth.h"
 #include "ipv4.h"
-#include "ipv4_config.h"
 
 
 /* int arp_resolve ( eth_iface_t * iface, ipv4_addr_t dest, mac_addr_t mac)
@@ -21,4 +20,4 @@
  * ERRORES:
  *   La función devuelve '-1' si se ha producido algún error.
  */
-int arp_resolve ( eth_iface_t * iface, ipv4_addr_t dest, mac_addr_t mac, ipv4_addr_t src);
+int arp_resolve ( eth_iface_t * iface, ipv4_addr_t dest, mac_addr_t mac);

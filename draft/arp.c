@@ -1,5 +1,4 @@
 #include "arp.h"
-#include "ipv4.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <libgen.h>
@@ -42,7 +41,7 @@ typedef struct arp_packet arp_packet;
  * ERRORES:
  *   La función devuelve '-1' si se ha producido algún error.
  */
- int arp_resolve ( eth_iface_t * iface, ipv4_addr_t dest, mac_addr_t mac, ipv4_addr_t src){
+ int arp_resolve ( eth_iface_t * iface, ipv4_addr_t dest, mac_addr_t mac){
 
 /*Generating ARP packet*/
  	arp_packet send_packet;
@@ -57,8 +56,7 @@ send_packet.hdw_addr_len=MAC_ADDR_SIZE;
 send_packet.upp_proto_addr_len=IPv4_ADDR_SIZE;
 send_packet.oper=htons(1); //Specifies the operation that the sender is performing: 1 for request, 2 for reply
 memcpy(send_packet.src_hrwd_addr,mac_src,MAC_ADDR_SIZE);
-memcpy(send_packet.src_proto_addr, src ,IPv4_ADDR_SIZE);
-//memset(send_packet.src_proto_addr,0,IPv4_ADDR_SIZE);
+memset(send_packet.src_proto_addr,0,IPv4_ADDR_SIZE);
 memset(send_packet.dst_hrwd_addr,0,MAC_ADDR_SIZE);
 memcpy(send_packet.dst_proto_addr, dest ,IPv4_ADDR_SIZE);
 
