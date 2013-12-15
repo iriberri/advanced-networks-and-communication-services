@@ -83,9 +83,10 @@ int main ( int argc, char * argv[] )
     }
   }
   
-  udp_open(conf_file, rout_file, port);
+  int er=udp_open(conf_file, rout_file, port);
   
-
+  if(er==-1)
+    exit(-1);
 
   ipv4_addr_t src;
   uint16_t  src_port;

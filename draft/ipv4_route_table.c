@@ -108,14 +108,15 @@ If
 IP: 192.168.1.1
 Apply mask to IP -> 192.168.0.0 != route
 */
-  if(memcmp(aux, route->subnet_addr, IPv4_ADDR_SIZE)!=0)
+  if(memcmp(aux, route->subnet_addr, IPv4_ADDR_SIZE)!=0){
+    printf("Longitud de prefijo primero: %d", prefix_length);
     return prefix_length;
-  
+  }
 int j;
 /* Traverse the compared result to obtain the number of
 bit that are equal, this is, the number of "ones"*/
  for(j =0; j<IPv4_ADDR_SIZE; j++){
-switch (aux[j]){
+ switch (route->subnet_mask[j]){
   case 255:
     prefix_length_aux+=8;
     break;
@@ -150,10 +151,8 @@ break;
 is null, we check that there are coincidences in order to 
 give the prefix_length value. We sum an extra 1 because of
 the initial variable value was -1. */
-if (prefix_length_aux>0){
-prefix_length+=prefix_length_aux;
-}
-  return prefix_length+1;
+  printf("Longitud de prefijo final: %d\n", prefix_length_aux);
+  return prefix_length_aux;
 }
 
 

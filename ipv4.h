@@ -148,6 +148,8 @@ typedef unsigned char ipv4_addr_t [IPv4_ADDR_SIZE];
  *   dirección IPv4.
  */
  int ipv4_str_addr ( char* str, ipv4_addr_t addr );
+    int ipv4_check_multicast(ipv4_addr_t ip);
+    int ipv4_check_broadcast(ipv4_addr_t ip);
 
 
 #endif /* _IPv4_H */

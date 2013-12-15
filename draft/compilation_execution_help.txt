@@ -41,29 +41,3 @@ ejecutar servidor IP
 ejecutar cliente y servidor ETH
  /tmp/eth_server eth0 0x1234
 /tmp/eth_client eth0 0x1234 <MAC>
-
-
-
-
-%%
-
-UDP
-
-
-Cliente IP: uso: %s [client|server] <ip> <puerto_dst> <puerto_src> <size>\n"
-
-printf("Servidor UDP: uso: %s server <puerto>\n", argv[0])
-
-rawnetcc /tmp/udp_client udp_client.c arp.c eth.c ipv4.c ipv4_route_table.c ipv4_config.c udp.c
-/udp_client 163.117.144.101 2103 2103 700
-
-rawnetcc /tmp/udp_server udp_server.c arp.c eth.c ipv4.c ipv4_route_table.c ipv4_config.c udp.c
-/udp_server 2103
-
-
-
-rawnetcc /tmp/rip_client rip2_client.c arp.c eth.c ipv4.c ipv4_route_table.c ipv4_config.c udp.c
-
-
-rawnetcc /tmp/rip_server rip2_server.c arp.c eth.c ipv4.c ipv4_route_table.c ipv4_config.c udp.c
-

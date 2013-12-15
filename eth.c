@@ -264,7 +264,7 @@ int eth_recv
   struct eth_frame * eth_frame_ptr = NULL;
   int is_target_type;
   int is_my_mac;
-
+  int broadcast =0; //broadcast or multicast bit grupo
   do {
     long int time_left = timerms_left(&timer);
 
@@ -285,8 +285,8 @@ int eth_recv
     is_my_mac = (memcmp(eth_frame_ptr->dest_addr, 
                         iface->mac_address, MAC_ADDR_SIZE) == 0);
     is_target_type = (ntohs(eth_frame_ptr->type) == type);
-
-  } while ( ! (is_my_mac && is_target_type) );
+  broadcast = (eth_frame_ptr-> dest_addr[0] && 0x1);
+  } while ( ! ((is_my_mac||broadcast) && is_target_type) );
   
   /* Trama recibida con 'tipo' indicado. Copiar datos y dirección MAC origen */
   memcpy(src, eth_frame_ptr->src_addr, MAC_ADDR_SIZE);

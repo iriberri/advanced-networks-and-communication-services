@@ -1,0 +1,9 @@
+sudo ip addr add 192.168.0.2/24 dev eth1
+sudo ip addr del 192.100.100.160/24 dev eth1
+
+telnet 192.168.0.1
+
+
+conf t
+router rip
+ network 192.168.0.0/8

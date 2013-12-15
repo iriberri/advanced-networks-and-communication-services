@@ -1,5 +1,5 @@
 # ipv4_config_server.txt
 #
-Interface wlp3s0
-IPv4Address 10.0.0.198
+Interface eth0
+IPv4Address 163.117.144.161
 SubnetMask 255.255.255.0

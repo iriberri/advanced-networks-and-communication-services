@@ -37,4 +37,31 @@
  */
 int ipv4_config_read( char* filename, char ifname[], ipv4_addr_t addr, ipv4_addr_t netmask );
 
+
+
+/* int ipv4_config_getip
+ * ( char* filename, ipv4_addr_t addr );
+ *
+ * DESCRIPCIÓN: 
+ *   Esta función lee el fichero de configuración IPv4 especificado y devuelve
+ *    la direccion IPv4 del mismo.
+ *
+ *   La memoria de las direcciones IPv4 debe haber
+ *   sido reservada previamente.
+ *
+ * PARÁMETROS:
+ *    'filename': Nombre del fichero de configuración que se desea leer.
+ *        'addr': Variable donde se copiará la dirección IPv4 del interfaz
+ *                leida del fichero de configuración.
+ *
+ * VALOR DEVUELTO:
+ *   La función devuelve '0' si el fichero de configuración se ha leido
+ *   correctamente.
+ *
+ * ERRORES:
+ *   La función devuelve '-1' si se ha producido algún error al leer el
+ *   fichero de configuración.
+ */
+int ipv4_config_getip( char* filename, ipv4_addr_t addr);
+
 #endif /* _IPv4_CONFIG_H*/

@@ -84,9 +84,10 @@ int main ( int argc, char * argv[] )
     }
   }
   
-  udp_open(conf_file, rout_file, 2346);
+  int er=udp_open(conf_file, rout_file, 2346);
   
-  
+  if(er==-1)
+    exit(-1);
   
   /* Generar payload */
   unsigned char payload[payload_len];

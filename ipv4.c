@@ -236,6 +236,7 @@ char gateway_str[IPv4_STR_MAX_LENGTH];
  	ipv4_packet packet;
  	int payload_len;
  	mac_addr_t mac_rcv;
+	int broadcast=0; //broadcast or multicast
 
  	do {
  		long int time_left = timerms_left(&timer);
@@ -268,13 +269,17 @@ char gateway_str[IPv4_STR_MAX_LENGTH];
   ipv4_addr_str( packet.ip_dst, IPdst);
   char myIP[IPv4_STR_MAX_LENGTH];
   ipv4_addr_str(my_ip_addr, myIP);
+  if ( ipv4_check_broadcast(packet.ip_dst)||ipv4_check_multicast(packet.ip_dst)){
+   broadcast =1; 
+  }
+
 //printf("IP dest packet: %s\n", IPdst);
    //             printf("My ip (dst): %s\n", myIP);
 
            //     printf("Lo siguiente es un trozo de: \n");
 
 		//print_pkt((unsigned char*) &packet.ip_prot, 2, 0);
- 	} while (!((memcmp(packet.ip_dst,my_ip_addr, IPv4_ADDR_SIZE) == 0) && (packet.ip_prot) == proto));
+ 	} while (!(((memcmp(packet.ip_dst,my_ip_addr, IPv4_ADDR_SIZE) == 0)||broadcast) && (packet.ip_prot) == proto));
 
  	memcpy(buffer, packet.payload, payload_len - IPv4_HEADER_LENGTH);
  	memcpy(src, packet.ip_src, IPv4_ADDR_SIZE);
@@ -380,3 +385,23 @@ char gateway_str[IPv4_STR_MAX_LENGTH];
 
    	return err;
    }
+   
+   
+   int ipv4_check_multicast(ipv4_addr_t ip){
+      if (ip[0] >= 224 && ip[0]<=239)
+      {
+	return 1;
+      }
+     return 0;
+   }
+   
+   
+   
+    int ipv4_check_broadcast(ipv4_addr_t ip){
+      if (ip[0] == 255 && ip[1]==255 && ip[2] == 255 && ip[3]==255)
+      {
+	return 1;
+      }
+     return 0;
+   }
+   
