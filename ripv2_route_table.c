@@ -6,7 +6,7 @@
 #include <errno.h>
 
 
- struct ripv2_route_table {
+ struct ripv2_route_table_t {
   ripv2_route_t * routes[RIPv2_ROUTE_TABLE_SIZE];
 };
 
