@@ -1,5 +1,11 @@
 %%
 
+rawnetcc /tmp/eth_client eth_client.c eth.c 
+rawnetcc /tmp/eth_server eth_server.c eth.c 
+
+/tmp/eth_server eth0 0x1234
+/tmp/eth_client eth0 0x1234 00:22:4d:48:07:cf 2
+
 
 rawnetcc arp_client arp_client.c arp.c eth.c ipv4.c ipv4_route_table.c ipv4_config.c
 

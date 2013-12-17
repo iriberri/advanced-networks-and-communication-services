@@ -217,12 +217,10 @@ int ipv4_config_getip
       /* Parse read name/value pair */
       if (strcasecmp(name_str, "Interface") == 0) {
      //   strcpy(ifname, value_str);
-     printf("hey\n");
         ifname_read = 1;
         err = 0;
       } else if (strcasecmp(name_str, "IPv4Address") == 0) {
         err = ipv4_str_addr(value_str, addr);
-	     printf("hey23r\n");
 
         if (err != 0) {
           fprintf(stderr, "%s:%d: Invalid 'IPv4Address' value: \"%s\"\n", 

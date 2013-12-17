@@ -111,10 +111,10 @@ int main (int argc, char * argv[])
 	//int num_entries = get_entries_number(bsize);
 	print_rip_packet2(&received_packet, bsize);
 	
-	  }
-	  ripv2_route_table_t *rip_table;
+ 	  }
+	  ripv2_route_table_t *rip_table = ripv2_route_table_create();
 
-	  	  ripv2_route_table_read ( "rip_route_table.txt", rip_table);
+	  	  ripv2_route_table_read ( "rip_route_table_client.txt", rip_table);
 		  ripv2_message_t response_packet;
 		  
 	    response_packet.command = RIP_RESPONSE;
@@ -127,16 +127,14 @@ int main (int argc, char * argv[])
 	    
 	    for (c_route = 0; c_route < 256; c_route++) {
 	      ripv2_route_t *cur_route = ripv2_route_table_get(rip_table, c_route);
-	      //  printf("Entra en looop\n");
 	      
 	      if (cur_route != NULL) {
 		printf("Entra en 222\n");
 		
-		//if (cur_route->metric != 16) {
 		  ripv2_entry_t cur_entry = rip_get_entry_from_rip_route(cur_route);
 		  memcpy(&(response_packet.rip_entries[c_route_rip]), &cur_entry, RIP_ENTRY_SIZE);
 		  c_route_rip++;
-		  // }
+		  
 	    }
 	  }
 
@@ -144,7 +142,7 @@ int main (int argc, char * argv[])
 
 	
 	int bsize2= RIP_HEADER_SIZE + (RIP_ENTRY_SIZE * c_route_rip);
-	udp_send(router_ip, 1520, (unsigned char*) &response_packet, bsize2);
+	udp_send(router_ip, 520, (unsigned char*) &response_packet, bsize2);
 
   return e;
   

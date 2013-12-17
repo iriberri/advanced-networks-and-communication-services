@@ -30,3 +30,4 @@ int udp_recv
 
 
 void udp_close ();
+ char * get_udp_iface();

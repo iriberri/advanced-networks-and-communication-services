@@ -18,6 +18,7 @@ extern mac_addr_t MAC_BCAST_ADDR;
 /* Maximum Transmission Unit (MTU) de la tramas Ethernet. */
 #define ETH_MTU 1500
 
+#define ETH_MIN_PAYLOAD_LENGTH 46
 /* Manejador de un interfaz ethernet. Esta es una estructura opaca que no debe
    ser accedida directamente, sino a través de las funciones de esta librería. */
 typedef struct eth_iface eth_iface_t;

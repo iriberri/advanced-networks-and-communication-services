@@ -406,3 +406,8 @@ char gateway_str[IPv4_STR_MAX_LENGTH];
      return 0;
    }
    
+   
+    char * get_ipv4_iface(){
+      return eth_getname(iface);
+     }
+   

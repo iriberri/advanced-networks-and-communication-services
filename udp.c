@@ -108,4 +108,6 @@ void udp_close ()
   ipv4_close();
  
 }
-
+ char * get_udp_iface(){
+  return get_ipv4_iface(); 
+ }

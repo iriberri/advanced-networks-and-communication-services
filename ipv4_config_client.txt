@@ -1,5 +1,5 @@
 # ipv4_config_client.txt
 #
 Interface eth0
-IPv4Address 163.117.144.210
+IPv4Address 163.117.144.127
 SubnetMask 255.255.255.0

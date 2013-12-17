@@ -153,4 +153,8 @@ typedef unsigned char ipv4_addr_t [IPv4_ADDR_SIZE];
     int ipv4_check_broadcast(ipv4_addr_t ip);
 
 
+    
+    
+     char * get_ipv4_iface();
+     
 #endif /* _IPv4_H */

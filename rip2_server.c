@@ -56,49 +56,6 @@ int send_table(ipv4_addr_t dst_ip, uint16_t dst_port) {
   }
 }
 
-// int i;
-// int counter=0;
-// for(i=0; i<25; i++){
-	//        printf("cocococo\n");
-	// 
-	//  if (rip_table->routes[i] != NULL){
-	//      printf("entra if\n");
-	// 
-	//   ripv2_entry_t new_entry;
-	//   new_entry.addr_family_id=htons(AF_INET);
-	//   new_entry.route_tag=0;
-	//   memcpy(new_entry.ip_addr, rip_table->rip_entries[i]->subnet_addr, IPv4_ADDR_SIZE);
-	//     memcpy(new_entry.mask, rip_table->rip_entries[i]->subnet_mask, IPv4_ADDR_SIZE);
-	//   memcpy(new_entry.next_hop, rip_table->rip_entries[i]->next_hop, IPv4_ADDR_SIZE);
-	// 
-	//    counter++;
-	//    printf("counter %d\n", counter);
-	//    
-	//   
-	//  }
-	
-	
-	
-	
-	//    for (i = 0; i < RIPv2_ROUTE_TABLE_SIZE; i++) {
-	//                 ripv2_route_t * route_i = ripv2_route_table_get(rip_table, i);
-	//                 if (route_i != NULL) {
-	// 		  ripv2_entry_t new_entry;
-	// 		    new_entry.addr_family_id=htons(AF_INET);
-	// 		  new_entry.route_tag=0;
-	// 		  memcpy(new_entry.ip_addr, route_i->subnet_addr, IPv4_ADDR_SIZE);
-	// 		  memcpy(new_entry.mask, route_i->subnet_mask, IPv4_ADDR_SIZE);
-	// 		  memcpy(new_entry.next_hop, route_i->next_hop, IPv4_ADDR_SIZE);
-	// 		  
-	// 
-	//                         new_entry.iface = route_i->iface;
-	//                         new_entry.metric = route_i->metric;
-	//                         new_entry.timer = timerms_left(&(route_i->timer));
-	// 			
-	// 					  memcpy(route_i, response_packet->routes[i], 20);
-	// 
-	//   
-	// }
 	
 	int bsize = RIP_HEADER_SIZE + (RIP_ENTRY_SIZE * c_route_rip);
 	return udp_send(dst_ip, dst_port, (unsigned char*) &response_packet, bsize);
@@ -143,7 +100,7 @@ int send_table(ipv4_addr_t dst_ip, uint16_t dst_port) {
 	    if (current_route != NULL) {
 	      time_passed = timerms_left(&current_route->timer);
 	      if (time_passed == 0) { 
-		printf("Eliminando ruta que ha expirado: ");
+		printf("Removing expired route: ");
 		ripv2_entry_t rip = rip_get_entry_from_rip_route(current_route);
 		print_rip_entry(&rip);
 		free(ripv2_route_table_remove(rip_table, i));
@@ -218,6 +175,8 @@ int send_table(ipv4_addr_t dst_ip, uint16_t dst_port) {
       
       while(1)
       {
+	
+	timeout = -1;
 	/*Prepare buffer for receiving*/
 	unsigned char r_buffer[UDP_MAX_SIZE];
 	unsigned short int src_port;
@@ -238,6 +197,7 @@ int send_table(ipv4_addr_t dst_ip, uint16_t dst_port) {
          }
       
       /*Actual receiving*/
+      printf("timeout %d\n", timeout);
       int bsize = udp_recv(source_ip, &src_port, r_buffer, timeout);
       printf("Received packet. Size: %d.\n", bsize);
       //i bsize = 0
@@ -259,6 +219,9 @@ int send_table(ipv4_addr_t dst_ip, uint16_t dst_port) {
 	  
 	} else if (received_packet.command == RIP_RESPONSE){
 	  int changed = 0;
+	   char * iface_name = get_udp_iface();
+
+
 	  /*Response*/
 	  /*Iterate all entries*/
 	  int number_of_entries = get_entries_number(bsize);
@@ -276,9 +239,9 @@ int send_table(ipv4_addr_t dst_ip, uint16_t dst_port) {
 	      
 	      ripv2_route_table_add(
 		rip_table,
-		ripv2_route_create(received_packet.rip_entries[current_entry].ip_addr, received_packet.rip_entries[current_entry].mask, "",
+		ripv2_route_create(received_packet.rip_entries[current_entry].ip_addr, received_packet.rip_entries[current_entry].mask, iface_name,
 				   source_ip, ntohl(received_packet.rip_entries[current_entry].metric) + 1, RIP_TIMEOUT * 1000));
-	      printf("Añadida ruta nueva:");
+	      printf("New route added:");
 	      print_rip_entry(&received_packet.rip_entries[current_entry]);
 	      
 	    } else {
