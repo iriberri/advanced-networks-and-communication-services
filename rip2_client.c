@@ -52,7 +52,16 @@ void print_rip_entry(ripv2_entry_t *entry) {
  */
 ipv4_addr_t router_ip;
 
-
+ripv2_entry_t rip_get_entry_from_rip_route(ripv2_route_t *rip_route) {
+  ripv2_entry_t entry;
+  entry.addr_family_id = htons(2);
+  entry.route_tag = 0;
+  memcpy(entry.ip_addr, rip_route->subnet_addr, 4);
+  memcpy(entry.mask, rip_route->subnet_mask, 4);
+  memset(entry.next_hop, 0, 4);
+  entry.metric = htonl(rip_route->metric);
+  return entry;
+}
 
 int main (int argc, char * argv[])
 {
@@ -134,8 +143,8 @@ int main (int argc, char * argv[])
 
 
 	
-	int bsize = RIP_HEADER_SIZE + (RIP_ENTRY_SIZE * c_route_rip);
-	udp_send(router_ip, 1520, (unsigned char*) &response_packet, bsize);
+	int bsize2= RIP_HEADER_SIZE + (RIP_ENTRY_SIZE * c_route_rip);
+	udp_send(router_ip, 1520, (unsigned char*) &response_packet, bsize2);
 
   return e;
   
