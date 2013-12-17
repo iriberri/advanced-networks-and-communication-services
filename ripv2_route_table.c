@@ -1,18 +1,17 @@
 #include "ipv4_route_table.h"
+#include "ripv2_route_table.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include "ipv4.h"
 
 
- struct ripv2_route_table_t {
-  ripv2_route_t * routes[RIPv2_ROUTE_TABLE_SIZE];
-};
 
 
 ripv2_route_t * ripv2_route_create
-( ipv4_addr_t subnet, ipv4_addr_t mask, char* iface, ipv4_addr_t next_hop, int metric, timerms_t timer )
+( ipv4_addr_t subnet, ipv4_addr_t mask, char* iface, ipv4_addr_t next_hop, int metric, long int timeout )
 {
   ripv2_route_t * route = (ripv2_route_t *) malloc(sizeof(struct ripv2_route));
 
@@ -22,7 +21,7 @@ ripv2_route_t * ripv2_route_create
     memcpy(route->iface, iface, IFACE_NAME_LENGTH);
     memcpy(route->next_hop, next_hop, IPv4_ADDR_SIZE);
     route->metric = metric;
-    route->timer = timer;
+    timerms_reset(&route->timer, timeout);
   }
   
   return route;
@@ -108,7 +107,7 @@ the initial variable value was -1. */
 
 
 
-void ipv4_route_print ( ripv2_route_t * route )
+void ripv2_route_print ( ripv2_route_t * route )
 {
   if (route != NULL) {
     char subnet_str[IPv4_STR_MAX_LENGTH];
@@ -140,7 +139,7 @@ ripv2_route_table_t * ripv2_route_table_create()
 {
   ripv2_route_table_t * table;
 
-  table = (ripv2_route_table_t *) malloc(sizeof(struct ripv2_route_table));
+  table = (ripv2_route_table_t *) malloc(sizeof(struct ripv2_route_table_t));
   if (table != NULL) {
     int i;
     for (i=0; i<RIPv2_ROUTE_TABLE_SIZE; i++) {
@@ -192,8 +191,11 @@ ripv2_route_t * ripv2_route_table_get ( ripv2_route_table_t * table, int index )
 
   if ((table != NULL) && (index >= 0) && (index < RIPv2_ROUTE_TABLE_SIZE)) {
     route = table->routes[index];
+       // printf("Gt entry%d\n", route->metric);
+
   }
-  
+ // printf("Gt entry\n");
+
   return route;
 }
 
@@ -229,7 +231,7 @@ int ripv2_route_table_find
 
 
 ripv2_route_t * ripv2_route_table_lookup ( ripv2_route_table_t * table, 
-                                         ripv2_addr_t addr )
+                                         ipv4_addr_t addr )
 {
   ripv2_route_t * best_route = NULL;
   int best_route_prefix = -1;
@@ -257,7 +259,7 @@ void ripv2_route_table_free ( ripv2_route_table_t * table )
   if (table != NULL) {
     int i;
     for (i=0; i<RIPv2_ROUTE_TABLE_SIZE; i++) {
-      ipv4_route_t * route_i = table->routes[i];
+      ripv2_route_t * route_i = table->routes[i];
       if (route_i != NULL) {
         table->routes[i] = NULL;
         ripv2_route_free(route_i);
@@ -268,7 +270,7 @@ void ripv2_route_table_free ( ripv2_route_table_t * table )
 }
 
 
-int ipv4_route_table_read ( char * filename, ipv4_route_table_t * table )
+int ripv2_route_table_read ( char * filename, ripv2_route_table_t * table )
 {
   int read_routes = 0;
 
@@ -287,6 +289,7 @@ int ipv4_route_table_read ( char * filename, ipv4_route_table_t * table )
   char next_hop_str[256];
   int err = 0;
   int metric;
+  int timer_get;
 
     while ((!feof(routes_file)) && (err == 0)) {
 
@@ -305,14 +308,14 @@ int ipv4_route_table_read ( char * filename, ipv4_route_table_t * table )
                 }
 
                 /* Parse line: Format "<subnet> <mask> <nhop> <iface>\n" */
-                err = sscanf(line, "%s %s %s %s %d\n", subnet_str, mask_str, iface_name, next_hop_str, &metric);
-                if (err != 5) {
+                err = sscanf(line, "%s %s %s %s %d %d\n", subnet_str, mask_str, iface_name, next_hop_str, &metric, &timer_get);
+		
+                if (err != 6) {
                         fprintf(stderr, "%s:%d: Invalid RIPv2 Route format: \"%s\" (%d items)\n", filename, linenum, line, err);
-                        fprintf(stderr, "%s:%d: Format must be: <subnet> <mask> <iface> <next hop> <metric>\n", filename, linenum);
+                        fprintf(stderr, "%s:%d: Format must be: <subnet> <mask> <iface> <next hop> <metric> <timer>\n", filename, linenum);
                         err = -1;
 
                 } else {
-
                         /* Parse RIPv2 route subnet address */
                         ipv4_addr_t subnet;
                         err = ipv4_str_addr(subnet_str, subnet);
@@ -336,10 +339,10 @@ int ipv4_route_table_read ( char * filename, ipv4_route_table_t * table )
                                 fprintf(stderr, "%s:%d: Invalid <next hop> value: \"%s\"\n", filename, linenum, next_hop_str);
                                 break;
                         }
-                        timerms_t timer;
-                        timerms_reset(&timer, INFINITE_TIMEOUT);
+                       // timerms_t timer;
+                        //timerms_reset(&timer, (long int)timer_get);
                         /* Create new route & add it to Route Table */
-                        ripv2_route_t * new_route = ripv2_route_create(subnet, mask, iface_name, next_hop, metric, timer);
+                        ripv2_route_t * new_route = ripv2_route_create(subnet, mask, iface_name, next_hop, metric, -1);
 
                         if (table != NULL) {
                                 err = ripv2_route_table_add(table, new_route);
@@ -369,10 +372,10 @@ int ripv2_route_table_output ( FILE * out, ripv2_route_table_t * table)
                 return -1;
         }
 
-        char subnet_str[IPv4_ADDR_STR_LENGTH];
-        char mask_str[IPv4_ADDR_STR_LENGTH];
+        char subnet_str[IPv4_STR_MAX_LENGTH];
+        char mask_str[IPv4_STR_MAX_LENGTH];
         char* ifname = NULL;
-        char nhop_str[IPv4_ADDR_STR_LENGTH];
+        char nhop_str[IPv4_STR_MAX_LENGTH];
         int metric;
         int i;
         for (i = 0; i < RIPv2_ROUTE_TABLE_SIZE; i++) {
@@ -381,7 +384,7 @@ int ripv2_route_table_output ( FILE * out, ripv2_route_table_t * table)
                         ipv4_addr_str(route_i->subnet_addr, subnet_str);
                         ipv4_addr_str(route_i->subnet_mask, mask_str);
                         ifname = route_i->iface;
-                        ipv4_addr_str(route_i->next_hop_addr, nhop_str);
+                        ipv4_addr_str(route_i->next_hop, nhop_str);
                         metric = route_i->metric;
                         long int remain = timerms_left(&(route_i->timer));
                         err = fprintf(out, "%-15s\t%-15s\t%s\t%s\t%d\t%ld\n", subnet_str, mask_str, ifname, nhop_str, metric, remain);
@@ -411,7 +414,7 @@ int ripv2_route_table_write ( ripv2_route_table_t * table, char * filename )
   fprintf(routes_file, "#\n");
 
   if (table != NULL) {
-    num_routes = ripv2_route_table_output (routes_file, table, 0);
+    num_routes = ripv2_route_table_output (routes_file, table);
     if (num_routes == -1) {
       fprintf(stderr, "Error writing RIPv2 Routes file \"%s\": %s.\n",
               filename, strerror(errno));

@@ -1,6 +1,11 @@
 #define RIPV2_VERSION 2
 #define RIP_REQUEST 1
 #define RIP_RESPONSE 2
+#define RIP_HEADER_SIZE 4
+#define RIP_ENTRY_SIZE 20
+#define RIP_PORT 520
+#define INFINITE_TIMEOUT -1
+#define RIP_TIMEOUT 180
 
 /*http://www.tcpipguide.com/free/t_RIPVersion2RIP2MessageFormatandFeatures-3.htm */
 

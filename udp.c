@@ -75,7 +75,7 @@ int udp_recv (ipv4_addr_t src, uint16_t * src_port, unsigned char * data, long i
     long int time_left = timerms_left(&timer);
 
     frame_len = ipv4_receive (src, UPPER_PROTOCOL, buffer, time_left );
-    printf("Packet arrived at udp layer\n");
+    //printf("Packet arrived at udp layer\n");
     if (frame_len == -1) {
       fprintf(stdout, "udp_recv(): ERROR en ipv4_recv(): \n");
       return -1;
@@ -89,7 +89,7 @@ int udp_recv (ipv4_addr_t src, uint16_t * src_port, unsigned char * data, long i
     }
          packet=(struct udp_packet *) buffer;
 
-printf("%d, %d\n", port,ntohs(packet->dst_port));
+//printf("%d, %d\n", port,ntohs(packet->dst_port));
   } while ( !(port==ntohs(packet->dst_port)));
   
   frame_len = ntohs(packet->length) - UDP_HEADER_LENGTH;

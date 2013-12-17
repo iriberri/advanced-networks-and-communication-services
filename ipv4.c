@@ -229,7 +229,7 @@ char gateway_str[IPv4_STR_MAX_LENGTH];
  */
  int ipv4_receive( ipv4_addr_t src, uint8_t proto, unsigned char buffer[], long int timeout){
  	
-     	printf("Starting send @ ipv4_receive\n");
+     	//printf("Starting send @ ipv4_receive\n");
 	timerms_t timer;
  	timerms_reset(&timer, timeout);
  	unsigned char eth_buffer[ETH_MTU];
@@ -283,13 +283,14 @@ char gateway_str[IPv4_STR_MAX_LENGTH];
 
  	memcpy(buffer, packet.payload, payload_len - IPv4_HEADER_LENGTH);
  	memcpy(src, packet.ip_src, IPv4_ADDR_SIZE);
-	printf("A packet arrived with protocol number %d\n", packet.ip_prot);
+	//printf("A packet arrived with protocol number %d\n", packet.ip_prot);
   /* Return number of received bytes */
  	return ntohs(packet.ip_len);
  }
 
 
   /*
+   * 
    * uint16_t ipv4_checksum ( unsigned char * data, int len )
    *
    * DESCRIPCIÓN:

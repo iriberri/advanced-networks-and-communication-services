@@ -53,6 +53,7 @@ typedef unsigned char ipv4_addr_t [IPv4_ADDR_SIZE];
  * ERRORES:
  *   La función devuelve '-1' si se ha producido algún error. 
  */
+
  void ipv4_close();
 /* int ipv4_send 
  * (ipv4_addr_t dst, uint16_t type, unsigned char * payload, int payload_len);

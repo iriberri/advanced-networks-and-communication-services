@@ -8,10 +8,9 @@
 /* Dirección IPv4 cero */
 ipv4_addr_t IPv4_ZERO_ADDR = { 0, 0, 0, 0 };
 
-struct ipv4_route_table {
+typedef struct ipv4_route_table {
   ipv4_route_t * routes[IPv4_ROUTE_TABLE_SIZE];
-};
-
+}ipv4_route_table_t;
 /* ipv4_route_t * ipv4_route_create
  * ( ipv4_addr_t subnet, ipv4_addr_t mask, char* iface, ipv4_addr_t gw );
  * 
