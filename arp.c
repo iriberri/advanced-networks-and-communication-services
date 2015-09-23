@@ -92,7 +92,7 @@ Types:
  timerms_reset(&timer, timeout);
  do{
  	long int time_left=timerms_left(&timer);
- 	/* mac id the MAC addres of the device that sent the frame. 
+ 	/* mac id the MAC address of the device that sent the frame. 
  	Is an output parameter where the address will be copied*/
  	len = eth_recv(iface, mac, 0x0806, buffer, time_left);
  	if (len == -1) {
@@ -106,9 +106,6 @@ Types:
 
  	rcvd_packet = (struct arp_packet *)buffer;
 
- 	if (len > 0) {
-//printf("hola");
- 	}
 /*Checking that the received packet is the expected one */
  }while(!(memcmp(rcvd_packet->src_proto_addr, dest, IPv4_ADDR_SIZE)==0 && ntohs(rcvd_packet->oper)==2));
 
